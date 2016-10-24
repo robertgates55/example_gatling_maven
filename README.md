@@ -223,6 +223,10 @@ You can't just use variables in the scala directly in the gatling session - you 
     }
 ```
 
-
-
-
+## Print a line of debug
+```scala
+  exec(session => {
+    println("ID: " + session("job_id").as[String] + " / RESULT: " + session("job_result").as[String])
+    session
+  })
+```
