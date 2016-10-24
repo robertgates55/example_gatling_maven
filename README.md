@@ -187,3 +187,35 @@ Best to build up chains as modules, then chains of chains, and then use the rand
     .pause(5 seconds, 20 seconds)
 ```
 
+## DoIfOrElse Example with a regex match on a session variable
+```scala
+    doIfOrElse(session => session("link").as[String].matches( "https?://.*")) {
+    //also .startsWith("/") instead of .matches("")
+      exec( //blah
+      )
+    } {
+      exec( //blah else
+      )
+    }
+```
+
+## Pass variable into method and use within the session (eg in a request)
+You can't just use variables in the scala directly in the gatling session - you need to set them there first
+```scala
+    //We want to pass a file type into this method
+    def getRandomFile(fileType: String): ChainBuilder = {
+    
+      //But to use it within the session (eg in http), we need to put it on the session
+      exec( session => session.set("fileType",fileType) )
+
+      //Now we can use it with the ${session_var} notation:
+      .exec(http("Get File")
+        .get("http://server/getfile/${fileType}")
+        .check(jsonPath("$..url").saveAs("url"))
+      ).exitHereIfFailed
+    }
+```
+
+
+
+
