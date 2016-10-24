@@ -180,3 +180,10 @@ Best to build up chains as modules, then chains of chains, and then use the rand
    )
   
 ```
+
+## Random pause between two durations
+```scala
+    exec(http(actionName).get(url).check(httpCheck))
+    .pause(5 seconds, 20 seconds)
+```
+
