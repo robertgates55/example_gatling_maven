@@ -235,13 +235,8 @@ You can't just use variables in the scala directly in the gatling session - you 
 ```scala
  val httpConf = http
     //Don't forget other http confs - see above
-    .inferHtmlResources(
-      black = BlackList(".*google.*","asd")
-    )
-    //And/Or
-    .inferHtmlResources(
-      white = WhiteList(".*mysiteonly.*")
-    )
+    .inferHtmlResources(BlackList(".*google.*","asd"), WhiteList(".*mysite.*"))
+
 ```
 
 ## Set timeToRun or duration or other runtime variables as optional environment parameters
