@@ -79,8 +79,8 @@ import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
 class BaseTest extends Simulation {
-# Some
-# Stuff
+// Some
+// Stuff
 
   //UA picker
   def randomUA: Expression[String] = {
@@ -100,8 +100,8 @@ class BaseTest extends Simulation {
     .maxRedirects(5)
     .userAgentHeader(randomUA)
 
-# Some
-# More
+// Some
+// More
 
   setUp(
     scenario("Frequent User")
@@ -124,3 +124,59 @@ object UAs {
   )
 }
  
+
+## For when you need to dynamically inject a scenario per user
+This is a very over-simplified example, but shows the rough outline. Useful for if you need to build up, say, n users but picking a random proxy username/password from a list of m (or perhaps some other variant within the http header/protocol). Because we can't pick the username/password dynamically like we could, say, with the useragent, the below allows us to build a set of users with differing httpConfs.
+```scala
+  //Use this to build up the scenarios we'll want to inject
+  def userScens() : Seq[PopulationBuilder] = {
+
+    val totalUserScens : Int = math.min(noProxyUserCount,1) + math.min(proxyNoAuthUserCount,1)
+    val userScens = new ArraySeq[PopulationBuilder](totalUserScens)
+
+    var j = 0
+    if(noProxyUserCount > 0){
+      userScens(j) = usersNoProxy.inject(
+           rampUsers(totalActionsPerUser * noProxyUserCount) over testDuration)
+         .protocols(httpNoProxyConf)
+      j += 1
+    }
+    if(proxyNoAuthUserCount > 0){
+      userScens(j) = usersWithProxy.inject(
+          rampUsers(totalActionsPerUser * proxyNoAuthUserCount) over testDuration)
+        .protocols(httpNoProxyConf.proxy(proxySetting))
+      j += 1
+    }
+
+    userScens
+  }
+
+  //This actually injects the user scenarios
+  setUp(
+    userScens:_*
+   ).maxDuration(testDuration)
+```
+
+## Use RandomSwitch to define how often to run particular user scenarios/chains
+Best to build up chains as modules, then chains of chains, and then use the randomSwitch to define how often to run them.
+
+```scala
+  object BaseTest {
+    def chooser(): ChainBuilder = {
+        randomSwitch( // beware: use parentheses, not curly braces!
+         50.0 -> (Spider.chain()),
+         30.0 -> (FileDownload.chain()),
+         10.0 -> (FileUpload.chain()),
+         10.0 -> (Polling.chain())
+      )
+    }
+  }
+  
+  setUp(
+    scenario("Frequent User")
+      .exec(BaseTest.chooser())
+      .inject(constantUsersPerSec(0.1) during (1 minutes))
+    .protocols(httpConf)
+   )
+  
+```
