@@ -232,7 +232,7 @@ You can't just use variables in the scala directly in the gatling session - you 
 ```
 
 ## WhiteList and BlackList on inferHtmlResources
-```
+```scala
  val httpConf = http
     //Don't forget other http confs - see above
     .inferHtmlResources(
