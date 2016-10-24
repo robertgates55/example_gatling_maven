@@ -230,3 +230,16 @@ You can't just use variables in the scala directly in the gatling session - you 
     session
   })
 ```
+
+## WhiteList and BlackList on inferHtmlResources
+```
+ val httpConf = http
+    //Don't forget other http confs - see above
+    .inferHtmlResources(
+      black = BlackList(".*google.*","asd")
+    )
+    //And/Or
+    .inferHtmlResources(
+      white = WhiteList(".*mysiteonly.*")
+    )
+```
