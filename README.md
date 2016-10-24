@@ -60,6 +60,13 @@ We can't use this val within the session, but you can pass it to other methods e
       }
 ```
 
+## Do something if a session variable is NOT defined/set
+```scala
+    .doIf(session => !(session("result_status").asOption[String].isDefined)) {
+      exec(some other stuff)
+    }
+```
+
 ## Repeat n times (where n is a random number)
 ```scala
   repeat(util.Random.nextInt(10).toInt) {
