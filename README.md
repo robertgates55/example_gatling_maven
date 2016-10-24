@@ -243,3 +243,17 @@ You can't just use variables in the scala directly in the gatling session - you 
       white = WhiteList(".*mysiteonly.*")
     )
 ```
+
+## Set timeToRun or duration or other runtime variables as optional environment parameters
+Useful for running as a CI job, for example, where you want to vary durations/loads etc
+```scala
+  val operationsPerSec = System.getProperty("operationsPerSec","0.05").toDouble
+  val numMinutes = Integer.getInteger("minutesToRun",15).toInt
+
+  setUp(
+    scenario("Frequent Shopper")
+      .exec(FrequentUser.chooser()))
+      .inject(constantUsersPerSec(operationsPerSec) during (numMinutes minutes))
+    .protocols(httpConf)
+  )
+```
