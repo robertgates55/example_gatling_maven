@@ -130,7 +130,7 @@ object UAs {
     "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36"
   )
 }
- 
+```
 
 ## For when you need to dynamically inject a scenario per user
 This is a very over-simplified example, but shows the rough outline. Useful for if you need to build up, say, n users but picking a random proxy username/password from a list of m (or perhaps some other variant within the http header/protocol). Because we can't pick the username/password dynamically like we could, say, with the useragent, the below allows us to build a set of users with differing httpConfs.
@@ -166,7 +166,6 @@ This is a very over-simplified example, but shows the rough outline. Useful for 
 
 ## Use RandomSwitch to define how often to run particular user scenarios/chains
 Best to build up chains as modules, then chains of chains, and then use the randomSwitch to define how often to run them.
-
 ```scala
   object BaseTest {
     def chooser(): ChainBuilder = {
